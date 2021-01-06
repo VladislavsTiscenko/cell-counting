@@ -4,4 +4,3 @@ numpy
 jsons
 opencv-python
 gunicorn
-libgl1-mesa-glx
