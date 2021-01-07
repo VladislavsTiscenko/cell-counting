@@ -4,10 +4,7 @@ import numpy as np
 import json
 import cv2
 
-app = Flask(__name__, static_url_path='/static')
-app._static_folder = 'static/'
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+app = Flask(__name__)
 
 nx = 4
 ny = 4
@@ -47,7 +44,7 @@ def processImage(img):
 
     boxes = getBoundingBoxes(img)
     areas = np.full(shape=nx*ny, fill_value=0)
-    
+
     for _,(x,y,_,_) in boxes.items():
         areas[checkArea(x,y)] += 1
 
@@ -61,10 +58,6 @@ def home():
         img = cv2.imdecode(np.fromstring(request.files[file].read(), np.uint8), cv2.IMREAD_UNCHANGED)
         response[file] = processImage(img)
     return response
-
-@app.route('/', methods=['GET'])
-def root():
-    return render_template('index.html')
 
 if __name__=="__main__":
     app.run()
