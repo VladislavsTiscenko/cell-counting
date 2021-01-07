@@ -4,3 +4,4 @@ numpy
 jsons
 opencv-python
 gunicorn
+gevent
