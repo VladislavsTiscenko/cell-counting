@@ -26,9 +26,8 @@ http {
    server {
       listen <%= ENV["PORT"] %>;
 
-      root /app/static;
-
       location / {
+        root app/static;
         index index.html;
       }
 
