@@ -17,4 +17,5 @@ jobs:
           cd dist
           dir
           rm 3rdpartylicenses.txt
+          mkdir ../../app/static
           mv -v ./* ../../app/static/
