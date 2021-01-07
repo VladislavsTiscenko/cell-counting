@@ -10,8 +10,9 @@ events {
 
 http {
    server_tokens off;
-   gzip on; 
+   gzip on;
    gzip_min_length 250;
+   client_max_body_size 10M;
 
    access_log off;
    error_log logs/nginx/error.log crit;
