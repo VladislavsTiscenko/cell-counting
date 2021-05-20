@@ -1,0 +1,61 @@
+<div *ngIf="errors">
+<h1>You have errors</h1>
+<h2>Please fix the errors in the images</h2>
+</div>
+
+<div *ngIf="loading&& !errors">
+<h1>Loading results...</h1>
+<h2>Please wait a second...</h2>
+</div>
+
+<div *ngIf="!loading && !errors">
+
+<h1>Measurement results</h1>
+
+<h2>Estimated cell concentration</h2>
+<h3>{{conc}} cells/ml</h3>
+
+<h2>Cells per 16th of image</h2>
+
+<p>
+Average: {{avg}}<br/>
+Maximum: {{max}}<br/>
+Minimum: {{min}}<br/>
+St. dev.: {{stdev}}<br/><br/>
+{{_images.length}} images, {{squares.length}} rectangles</p>
+
+<h2>Cell distribution into vials</h2>
+
+<div [formGroup]="vialForm" #formDir="ngForm">
+
+  <mat-form-field appearance="standard">
+    <mat-label>Volume of suspension (ml)</mat-label>
+    <input matInput placeholder="25.0" formControlName="volSusp">
+    <mat-error *ngIf="(volSusp.dirty || volSusp.touched) && volSusp.invalid && volSusp.errors.notfloat">Not a decimal with a dot as separator.</mat-error>
+  </mat-form-field><br/>
+
+  <mat-form-field appearance="standard">
+    <mat-label>Size of vials (ml)</mat-label>
+    <input matInput placeholder="10.0" formControlName="vialSize">
+    <mat-error *ngIf="(vialSize.dirty || vialSize.touched) && vialSize.invalid && vialSize.errors.notfloat">Not a decimal with a dot as separator.</mat-error>
+  </mat-form-field><br/>
+
+  <mat-form-field appearance="standard">
+    <mat-label>Max concentration in vial (cells/ml)</mat-label>
+    <input matInput placeholder="50000" formControlName="maxConc">
+    <mat-error *ngIf="(maxConc.dirty || maxConc.touched) && maxConc.invalid && maxConc.errors.notfloat">Not a decimal with a dot as separator.</mat-error>
+  </mat-form-field><br/>
+
+  <p *ngIf="vialForm.valid">
+    Used vials: {{usedVials}}<br/>
+    Dilutant volume: {{dilutantVolume}} ml<br/>
+    Dilutant per vial: {{dilutantPerVial}} ml<br/>
+  </p>
+
+  <p *ngIf="!vialForm.valid" style="max-width: 200px;">
+    To calculate the optimal way to distribute cells into vials, please enter the above parameters with a dot (.) decimal separator.
+  </p>
+
+</div>
+
+</div>

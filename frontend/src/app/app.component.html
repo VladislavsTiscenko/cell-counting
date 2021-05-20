@@ -1,0 +1,58 @@
+<mat-toolbar color="primary" class="header">
+
+  <span>cell counting app</span>
+  <span class="example-spacer"></span>
+  <button *ngIf="images.length > 0" mat-icon-button aria-label="Reset session" (click)="removeAll()">
+    <mat-icon>close</mat-icon>
+  </button>
+
+</mat-toolbar>
+
+<div class="content">
+
+  <ngx-dropzone *ngIf="images.length == 0" (change)="onSelectFiles($event)" class="init-dropzone">
+      <ngx-dropzone-label>
+        <span style="font-size: 24px;">Drag and drop images here</span><br/>
+        or click to open dialog
+      </ngx-dropzone-label>
+  </ngx-dropzone>
+
+  <div *ngIf="images.length != 0" class="container">
+
+    <div class="view-container">
+
+      <div class="selected-image-container card">
+        <img [src]="selectedImage.getSrc()"/>
+      </div>
+
+      <div class="image-gallery card">
+        <div class="gallery-cards-container">
+          <div class="image-card card" *ngFor="let image of images">
+            <div class="image-card-content">
+              <img *ngIf="!image.error" [src]="image.getSrc()" (click)="selectImage(image.id)"/>
+              <div *ngIf="image.error" class="image-card-caption">Error on {{image.fileName}}. {{image.error}}</div>
+              <div *ngIf="!image.error" class="image-card-caption">{{image.fileName}}<span *ngIf="!image.isLoaded()"> (loading)</span><b *ngIf="image == selectedImage"> (selected)</b></div>
+              <button class="image-card-close-btn" mat-icon-button (click)="removeImage(image.id)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ngx-dropzone (change)="onSelectFiles($event)" class="view-dropzone">
+        <ngx-dropzone-label>
+          <span style="font-size: 20px;">Drag and drop images to add</span><br/>
+          or click to open dialog
+        </ngx-dropzone-label>
+      </ngx-dropzone>
+
+    </div>
+
+    <div class="results-container card">
+      <app-results [images]="images"></app-results>
+    </div>
+
+  </div>
+
+</div>

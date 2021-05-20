@@ -15,22 +15,33 @@ width = 2048
 height = 1536
 
 def getBoundingBoxes(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (7,7), 0)
-    edged = cv2.Canny(blurred, 50, 150)
-
-    (contours, _) = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    prep = cv2.bilateralFilter(image, 5, 175, 175)
+    gray = cv2.cvtColor(prep, cv2.COLOR_BGR2GRAY)
+    threshold = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+                cv2.THRESH_BINARY,11,2)
+    gray = cv2.Canny(threshold, 5, 70, 3)
+    contours, hierarchy = cv2.findContours(gray,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+    contour_list = []
     boxes = {}
 
-    for c in contours:
-        rect = cv2.boundingRect(c)
-        a = 20
-        b = 40
-        if rect[2] < a or rect[3] < a or rect[2] > b or rect[3] > b or rect[2] > 1.2*rect[3] or rect[3] > 1.2*rect[2] or cv2.contourArea(c) < 30:
-            continue
-        else:
-            x,y,_,_ = rect
-            boxes[(x,y)] = rect
+    if not hierarchy is None:
+
+        for i,relation in enumerate(hierarchy[0]):
+            parent = relation[3]
+            child = relation[2]
+            if parent == -1 and not child == -1:
+
+                contour = contours[i]
+                contourArea = cv2.contourArea(contour)
+
+                (x,y),radius = cv2.minEnclosingCircle(contour)
+                center = (int(x),int(y))
+                circleArea = math.pi * (radius**2)
+
+                if contourArea > math.pi * (8**2) and contourArea/circleArea >= 0.6:
+                    rect = cv2.boundingRect(contour)
+                    x,y,_,_ = rect
+                    boxes[(x,y)] = rect
 
     return boxes
 
