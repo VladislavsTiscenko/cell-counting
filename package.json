@@ -4,5 +4,9 @@
   "scripts": {
     "postinstall": "cd frontend && npm install",
     "heroku-postbuild": "cd frontend && npm run build"
+  },
+  "engines" : { 
+    "npm" : ">=7.0.0",
+    "node" : ">=16.0.0"
   }
 }
