@@ -5,8 +5,7 @@ import json
 import cv2
 import math
 
-app = Flask(__name__, static_url_path='/static')
-app._static_folder = 'static/'
+app = Flask(__name__,template_folder='static')
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -58,12 +57,17 @@ def checkArea(x, y):
 def processImage(img):
 
     boxes = getBoundingBoxes(img)
-    areas = np.full(shape=nx*ny, fill_value=0)
+    #areas = np.full(shape=nx*ny, fill_value=0)
+    
+    returnable = []
+    
+    #for _,(x,y,_,_) in boxes.items():
+    #    areas[checkArea(x,y)] += 1
     
     for _,(x,y,_,_) in boxes.items():
-        areas[checkArea(x,y)] += 1
+    	returnable.append([x,y])
 
-    return areas.tolist()
+    return returnable
 
 @app.route("/api/inference", methods=['POST'])
 @cross_origin()

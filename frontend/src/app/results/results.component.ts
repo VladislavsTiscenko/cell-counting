@@ -34,6 +34,9 @@ export class ResultsComponent implements OnInit {
 
   vialForm: FormGroup;
 
+  private nx: number = 4;
+  private ny: number = 4;
+
   @Input() set images(images: CellImage[]) {
 
     this._images = images;
@@ -81,12 +84,34 @@ export class ResultsComponent implements OnInit {
 
   constructor() {}
 
+  checkArea(x, y) {
+
+    const width = 2048;
+    const height = 1536;
+
+    const aw = Math.floor(width/this.nx);
+    const ah = Math.floor(height/this.ny);
+    for (let i = 0; i < this.ny*this.nx; i++) {
+      const ix = i%this.nx
+      const iy = Math.floor(i/this.nx);
+      if (ix*aw <= x && (ix+1)*aw > x && iy*ah <= y && (iy+1)*ah > y)
+          return i
+    }
+
+    return 0;
+
+  }
+
+
   updateSquares() {
 
     this.squares = [];
     for (const image of this._images) {
 
-      this.squares.push(...image.squares);
+      const a = Array(this.nx*this.ny).fill(0);
+      for (const [x,y] of image.squares)
+          a[this.checkArea(x,y)] += 1
+      this.squares.push(...a);
 
     }
 

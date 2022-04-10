@@ -22,7 +22,7 @@
     <div class="view-container">
 
       <div class="selected-image-container card">
-        <img [src]="selectedImage.getSrc()"/>
+        <img-canvas [image]="[selectedImage.getSrc(), selectedImage.squares]"></img-canvas>
       </div>
 
       <div class="image-gallery card">

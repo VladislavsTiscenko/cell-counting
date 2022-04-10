@@ -84,15 +84,34 @@ html {
   background: #444;
   overflow: hidden;
 
+  position: relative;
+
 }
 
-.selected-image-container img {
+.selected-image-container img-canvas {
 
+  width: 533px;
   height: 100%;
   position: relative;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
+
+  display: inline-block;
+
+}
+
+.selected-image-container .selected-image-container {
+
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 533px;
+
+  background: greenyellow;
+  border: 2px solid red;
 
 }
 
@@ -183,5 +202,18 @@ html {
   -webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.5);
   -moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.5);
   box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.5);
+
+}
+
+.cell-box {
+
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  width: 5px;
+  height: 5px;
+
+  border: 2px solid greenyellow;
 
 }
