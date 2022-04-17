@@ -40,6 +40,7 @@ export class CellImage {
 
   public getSrc(): SafeUrl {
 
+    // Bypass Angular's sanitization
     return this.sanitizer.bypassSecurityTrustUrl(this.src);
 
   }
@@ -77,6 +78,8 @@ export class AppComponent {
 
   getDefaultSelectedImage() {
 
+    // The default selected image is the first one without any validation errors
+
     return this.images.filter((val, i, arr) => {
       return !val.error;
     })[0];
@@ -94,11 +97,15 @@ export class AppComponent {
 
       const file = event.addedFiles[i];
 
+      // Extension check
+
       if (file.type.split('/').pop().toLowerCase() != "bmp") {
         this.images.push(new CellImage(undefined, file.name, "Incorrect file format."));
-        this.images = [...this.images]; // Update Setter
+        this.images = [...this.images]; // Render changes
         continue;
       }
+
+      // Instantiate image, check for readability
 
       const img = new Image();
       img.src = URL.createObjectURL(file);
@@ -106,17 +113,18 @@ export class AppComponent {
       img.onerror = () => {
 
         this.images.push(new CellImage(undefined, file.name, "Image is unreadable."));
-        this.images = [...this.images]; // Update Setter
-
+        this.images = [...this.images]; // Render changes
 
       };
 
       img.onload = () => {
 
+        // Check for image size
+
         if (img.width != 2048 || img.height != 1536) {
 
           this.images.push(new CellImage(undefined, file.name, "Image resolutions incorrect."));
-          this.images = [...this.images]; // Update Setter
+          this.images = [...this.images]; // Render changes
 
         } else {
 
@@ -124,8 +132,10 @@ export class AppComponent {
           this.images.push(newImg);
           this.selectedImage = this.getDefaultSelectedImage();
           toLoad.push(newImg);
+
+          // If image is the last one in the list of files to add...
           if (file == event.addedFiles[event.addedFiles.length-1]) {
-            this.images = [...this.images]; // Update Setter
+            this.images = [...this.images]; // Render changes
             this.requestSquares(toLoad);
           }
 
@@ -152,11 +162,13 @@ export class AppComponent {
       this.http.post('/api/inference', formData).subscribe(res => {
 
         for (const index of Object.keys(res))
+
+          // Choose image that matches index and set its bounding boxes
           this.images.filter((img, i, arr) => {
             return img.id === parseInt(index);
           })[0].squares = res[index];
 
-        this.images = [...this.images]; // Update Setter
+        this.images = [...this.images]; // Render changes
 
       });
 
@@ -223,6 +235,8 @@ export class imgCanvas implements AfterViewInit {
     this.context.drawImage(this._image, 0, 0, this.width, this.height);
     if (this.squares) {
       this.context.strokeStyle = "lime";
+
+      // Draw each bounding box
       for (const square of this.squares) {
         this.context.beginPath();
         const x = square[0]/2048*533;
@@ -235,6 +249,7 @@ export class imgCanvas implements AfterViewInit {
       const ah = Math.floor(this.height/this.ny);
       this.context.strokeStyle = "lightgray";
 
+      // Draw the rectangles where the bounding boxes are distributed
       for (let i = 0; i < this.ny*this.nx; i++) {
         const ix = i%this.nx
         const iy = Math.floor(i/this.nx);

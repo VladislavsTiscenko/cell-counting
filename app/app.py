@@ -1,86 +1,100 @@
 from flask import Flask, request, render_template, send_from_directory
 from flask_cors import CORS, cross_origin
 import numpy as np
-import json
 import cv2
 import math
+
+
+# Define constants
+
+IMAGE_WIDTH = 2048
+IMAGE_HEIGHT = 1536
+MIN_CIRCLE_RATIO = 0.6
+MIN_CIRCLE_RADIUS = 8
+
+
+# Instantiate Flask app, enable CORS
 
 app = Flask(__name__,template_folder='static')
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-nx = 4
-ny = 4
-width = 2048
-height = 1536
 
-def getBoundingBoxes(image):
+def get_bounding_boxes(image):
+    """
+    Get the cell bounding box upper-left coordinates on the image
+
+    Parameters:
+        image: Image passed from cv2.imdecode
+
+    Returns:
+        box_coords: array of coordinates: [[x,y], [x,y], ...]
+    """
+
+    # Image preprocessing
+
     prep = cv2.bilateralFilter(image, 5, 175, 175)
     gray = cv2.cvtColor(prep, cv2.COLOR_BGR2GRAY)
     threshold = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
                 cv2.THRESH_BINARY,11,2)
     gray = cv2.Canny(threshold, 5, 70, 3)
     contours, hierarchy = cv2.findContours(gray,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
-    contour_list = []
-    boxes = {}
+    box_coords = []
 
     if not hierarchy is None:
 
         for i,relation in enumerate(hierarchy[0]):
+
+            # Get hierarchical relations
             parent = relation[3]
             child = relation[2]
+
+            # Check if there is no parent, but if there is a child
             if parent == -1 and not child == -1:
 
-                contour = contours[i]
-                contourArea = cv2.contourArea(contour)
+                contour = contours[i] # Find matching contour
+                contourArea = cv2.contourArea(contour) # Find area of contour
 
-                (x,y),radius = cv2.minEnclosingCircle(contour)
-                center = (int(x),int(y))
+                # Find area of minimum enclosing circle
+                _, radius = cv2.minEnclosingCircle(contour)
                 circleArea = math.pi * (radius**2)
 
-                if contourArea > math.pi * (8**2) and contourArea/circleArea >= 0.6:
-                    rect = cv2.boundingRect(contour)
-                    x,y,_,_ = rect
-                    boxes[(x,y)] = rect
+                # Min. encl. circle size and contour shape check
+                if radius > MIN_CIRCLE_RADIUS and contourArea/circleArea >= MIN_CIRCLE_RATIO:
+                    x,y,_,_ = cv2.boundingRect(contour)
+                    box_coords.append([x,y]) # Store coordinates of contour bounding rectangle upper left corner
 
-    return boxes
+    return box_coords
 
-def checkArea(x, y):
-    aw = width//nx
-    ah = height//ny
-    for i in range(ny*nx):
-        ix = i%nx
-        iy = i//nx
-        if ix*aw <= x and (ix+1)*aw > x and iy*ah <= y and (iy+1)*ah > y:
-            return i
-
-def processImage(img):
-
-    boxes = getBoundingBoxes(img)
-    #areas = np.full(shape=nx*ny, fill_value=0)
-    
-    returnable = []
-    
-    #for _,(x,y,_,_) in boxes.items():
-    #    areas[checkArea(x,y)] += 1
-    
-    for _,(x,y,_,_) in boxes.items():
-    	returnable.append([x,y])
-
-    return returnable
 
 @app.route("/api/inference", methods=['POST'])
 @cross_origin()
-def home():
+def inference():
+    """
+    Cell detection inference endpoint.
+    """
+
     response = {}
+
     for file in request.files:
-        img = cv2.imdecode(np.fromstring(request.files[file].read(), np.uint8), cv2.IMREAD_UNCHANGED)
-        response[file] = processImage(img)
+
+        # Decode image
+        image = cv2.imdecode(np.fromstring(request.files[file].read(), np.uint8), cv2.IMREAD_UNCHANGED)
+        
+        # Get bounding box coordinates for image
+        response[file] = get_bounding_boxes(image)
+
     return response
+
 
 @app.route('/', methods=['GET'])
 def root():
+    """
+    Static file rendering endpoint to serve the frontend.
+    """
+
     return render_template('index.html')
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     app.run()
