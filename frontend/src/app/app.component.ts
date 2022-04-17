@@ -134,8 +134,6 @@ export class AppComponent {
           this.selectedImage = this.getDefaultSelectedImage();
           toLoad.push(newImg);
 
-          console.log(""+index+" "+(event.addedFiles.length-1))
-
           // If image is the last one in the list of files to add...
           if (index == event.addedFiles.length-1) {
             this.images = [...this.images]; // Render changes
