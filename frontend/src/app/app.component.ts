@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
-import { imgCanvas } from './imgcanvas.component'
 
 let currId = 0;
 

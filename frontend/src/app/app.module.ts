@@ -7,7 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { AppComponent, imgCanvas } from './app.component';
+import { AppComponent } from './app.component';
+import { ImgCanvas } from './imgcanvas.component';
 
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { HttpClientModule } from '@angular/common/http';
@@ -19,7 +20,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   declarations: [
     AppComponent,
     ResultsComponent,
-    imgCanvas
+    ImgCanvas
   ],
   imports: [
     BrowserModule,

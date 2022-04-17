@@ -2,12 +2,12 @@ import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular
 
 @Component({
     selector: 'img-canvas',
-    template: '<canvas #imgCanvas class="canvas" width="533" height="400"></canvas>',
+    template: '<canvas #ImgCanvas class="canvas" width="533" height="400"></canvas>',
     styles: ['.canvas { width: 100%; height: 100%; }'],
   })
-export class imgCanvas implements AfterViewInit {
+export class ImgCanvas implements AfterViewInit {
   
-  @ViewChild('imgCanvas')
+  @ViewChild('ImgCanvas')
   canvas: ElementRef<HTMLCanvasElement>;
 
   public context: CanvasRenderingContext2D;
