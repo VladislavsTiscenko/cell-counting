@@ -96,6 +96,7 @@ export class AppComponent {
     for (var i = 0; i < event.addedFiles.length; i++) {
 
       const file = event.addedFiles[i];
+      const index = i;
 
       // Extension check
 
@@ -133,8 +134,10 @@ export class AppComponent {
           this.selectedImage = this.getDefaultSelectedImage();
           toLoad.push(newImg);
 
+          console.log(""+index+" "+(event.addedFiles.length-1))
+
           // If image is the last one in the list of files to add...
-          if (i == event.addedFiles.length-1) {
+          if (index == event.addedFiles.length-1) {
             this.images = [...this.images]; // Render changes
             this.requestSquares(toLoad);
           }

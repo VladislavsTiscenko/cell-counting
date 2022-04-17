@@ -45,9 +45,6 @@ export class ImgCanvas implements AfterViewInit {
         const ix = i%this.nx
         const iy = Math.floor(i/this.nx);
 
-        //if (ix*aw <= x && (ix+1)*aw > x && iy*ah <= y && (iy+1)*ah > y)
-        //    return i
-
         this.context.beginPath();
         this.context.rect(ix*aw, iy*ah, aw, ah);
         this.context.stroke();
