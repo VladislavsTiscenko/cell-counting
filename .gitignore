@@ -1,2 +1,4 @@
 Files/
-__pycache__/
+__pycache__
+static
+.wsgi.py.swp
